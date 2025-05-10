@@ -266,7 +266,7 @@ container.register([
         {
           name: 'repliesRepository',
           internal: RepliesRepository.name,
-        }
+        },
       ],
     },
   },
@@ -299,7 +299,7 @@ container.register([
         },
       ],
     },
-  }
+  },
 ]);
 
 module.exports = container;

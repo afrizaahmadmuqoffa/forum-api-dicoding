@@ -2,11 +2,9 @@ const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const AddThread = require('../../../Domains/threads/entities/AddThread');
-const AddedThread = require('../../../Domains/threads/entities/AddedThread');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const InvariantError = require('../../../Commons/exceptions/InvariantError');
 const pool = require('../../database/postgres/pool');
-const comments = require('../../../Interfaces/http/api/comments');
 
 describe('ThreadRepositoryPostgres', () => {
   afterEach(async () => {
@@ -27,12 +25,12 @@ describe('ThreadRepositoryPostgres', () => {
         owner: 'user-123',
       });
       const fakeIdGenerator = () => '123';
-      const pool = {
+      const fakePool = {
         query: jest.fn().mockResolvedValue({
           rows: [{}],
         }),
       };
-      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(fakePool, fakeIdGenerator);
 
       // Action & Assert
       await expect(threadRepositoryPostgres.addThread(thread))
@@ -40,7 +38,6 @@ describe('ThreadRepositoryPostgres', () => {
     });
 
     it('should persist add thread and return added thread correctly', async () => {
-
       // Arrange
       await UsersTableTestHelper.addUser({ id: 'user-123' });
       const thread = new AddThread({
@@ -48,10 +45,9 @@ describe('ThreadRepositoryPostgres', () => {
         body: 'A body',
         owner: 'user-123',
       });
-      
+
       const fakeIdGenerator = () => '123';
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
-
 
       await threadRepositoryPostgres.addThread(thread);
 
@@ -59,7 +55,7 @@ describe('ThreadRepositoryPostgres', () => {
       expect(foundThread).toHaveLength(1);
     });
   });
-  
+
   describe('verifyThreadIsExistById function', () => {
     it('should throw NotFoundError when thread not found', async () => {
       // Arrange

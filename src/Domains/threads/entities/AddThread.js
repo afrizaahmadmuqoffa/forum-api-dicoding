@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 class AddThread {
   constructor(payload) {
     this._verifyPayload(payload);
@@ -20,4 +21,3 @@ class AddThread {
 }
 
 module.exports = AddThread;
-

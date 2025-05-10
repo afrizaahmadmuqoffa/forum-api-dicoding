@@ -9,7 +9,7 @@ const RepliesTableTestHelper = {
     owner = 'user-123',
     commentId = 'comment-123',
     date = new Date().toISOString(),
-    }) {
+  }) {
     const query = {
       text: 'INSERT INTO replies VALUES($1, $2, $3, $4, $5)',
       values: [id, content, commentId, owner, date],
@@ -28,9 +28,9 @@ const RepliesTableTestHelper = {
     return rows;
   },
 
-  async cleanTable() { 
+  async cleanTable() {
     await pool.query('DELETE FROM replies WHERE 1=1');
   },
-}
+};
 
 module.exports = RepliesTableTestHelper;

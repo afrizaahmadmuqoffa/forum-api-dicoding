@@ -8,16 +8,15 @@ const CommentTableTestHelper = require('../../../../tests/CommentsTableTestHelpe
 const AuthenticationTestHelper = require('../../../../tests/AuthenticationsTestHelper');
 
 describe('/threads/{threadId}/comments/{commentId}/replies endpoint', () => {
-    
-    afterAll(async () => {
-        await pool.end();
-    });
-    afterEach(async () => {
-      await CommentTableTestHelper.cleanTable();
-      await ThreadsTableTestHelper.cleanTable();
-      await UsersTableTestHelper.cleanTable();
-    });
-    
+  afterAll(async () => {
+    await pool.end();
+  });
+  afterEach(async () => {
+    await CommentTableTestHelper.cleanTable();
+    await ThreadsTableTestHelper.cleanTable();
+    await UsersTableTestHelper.cleanTable();
+  });
+
   describe('when POST /threads/{threadId}/comments/{commentId}/replies', () => {
     it('should response 401 when no access token provided', async () => {
       // Arrange
@@ -42,7 +41,7 @@ describe('/threads/{threadId}/comments/{commentId}/replies endpoint', () => {
       await CommentTableTestHelper.addComment({
         id: commentId,
         owner: 'user-123',
-      })
+      });
 
       // Action
       const response = await server.inject({

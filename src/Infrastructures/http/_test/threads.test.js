@@ -8,7 +8,6 @@ const container = require('../../container');
 const pool = require('../../database/postgres/pool');
 
 describe('/threads endpoint', () => {
-  
   afterAll(async () => {
     await pool.end();
   });
@@ -18,7 +17,7 @@ describe('/threads endpoint', () => {
     await CommentsTableTestHelper.cleanTable();
     await RepliesTableTestHelper.cleanTable();
   });
-  
+
   describe('when POST /threads', () => {
     it('should response 401 when no access token provided', async () => {
       // Arrange
@@ -157,15 +156,11 @@ describe('/threads endpoint', () => {
         url: `/threads/${threadId}`,
       });
 
-
       // Assert
       const responseJson = JSON.parse(response.payload);
-      console.log('responseJson', responseJson)
 
+      const { data: { thread } } = responseJson;
 
-      const {data: {thread}} = responseJson;
-
-      
       expect(response.statusCode).toEqual(200);
       expect(typeof responseJson.data).toEqual('object');
       expect(typeof thread).toEqual('object');

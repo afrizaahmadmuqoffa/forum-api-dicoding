@@ -39,5 +39,4 @@ describe('AddComment entities', () => {
     expect(threadId).toEqual(payload.threadId);
     expect(owner).toEqual(payload.owner);
   });
-}
-);
+});

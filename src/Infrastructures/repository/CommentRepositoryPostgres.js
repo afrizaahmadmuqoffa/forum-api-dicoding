@@ -62,7 +62,6 @@ class CommentRepositoryPostgres extends CommentRepository {
     };
 
     await this._pool.query(query);
-
   }
 
   async getCommentsByThreadId(threadId) {

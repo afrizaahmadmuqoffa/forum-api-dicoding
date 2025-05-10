@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 class RefreshAuthenticationUseCase {
   constructor({
     authenticationRepository,

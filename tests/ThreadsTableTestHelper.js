@@ -28,8 +28,6 @@ const ThreadsTableTestHelper = {
     return rows;
   },
 
-
-
   async cleanTable() {
     await pool.query('DELETE FROM threads WHERE 1=1');
   },

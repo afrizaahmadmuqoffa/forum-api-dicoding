@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 class UserLogin {
   constructor(payload) {
     this._verifyPayload(payload);

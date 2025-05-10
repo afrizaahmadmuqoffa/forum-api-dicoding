@@ -1,5 +1,5 @@
 class DeleteCommentUseCase {
-  constructor({commentRepository}) {
+  constructor({ commentRepository }) {
     this._commentRepository = commentRepository;
   }
 

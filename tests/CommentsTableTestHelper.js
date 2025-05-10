@@ -8,7 +8,7 @@ const CommentsTableTestHelper = {
     owner = 'user-123',
     threadId = 'thread-123',
     date = new Date().toISOString(),
-    }) {
+  }) {
     const query = {
       text: 'INSERT INTO comments VALUES($1, $2, $3, $4, $5)',
       values: [id, content, threadId, owner, date],
@@ -27,9 +27,9 @@ const CommentsTableTestHelper = {
     return rows;
   },
 
-  async cleanTable() { 
+  async cleanTable() {
     await pool.query('DELETE FROM comments WHERE 1=1');
   },
-}
+};
 
 module.exports = CommentsTableTestHelper;

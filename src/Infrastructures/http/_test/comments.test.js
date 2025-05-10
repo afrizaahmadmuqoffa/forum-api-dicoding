@@ -7,16 +7,15 @@ const CommentTableTestHelper = require('../../../../tests/CommentsTableTestHelpe
 const AuthenticationTestHelper = require('../../../../tests/AuthenticationsTestHelper');
 
 describe('/threads/{threadId}/comments endpoint', () => {
-    
-    afterAll(async () => {
-        await pool.end();
-    });
-    afterEach(async () => {
-      await CommentTableTestHelper.cleanTable();
-      await ThreadsTableTestHelper.cleanTable();
-      await UsersTableTestHelper.cleanTable();
-    });
-    
+  afterAll(async () => {
+    await pool.end();
+  });
+  afterEach(async () => {
+    await CommentTableTestHelper.cleanTable();
+    await ThreadsTableTestHelper.cleanTable();
+    await UsersTableTestHelper.cleanTable();
+  });
+
   describe('when POST /threads/{threadId}/comments', () => {
     it('should response 401 when no access token provided', async () => {
       // Arrange
@@ -24,7 +23,7 @@ describe('/threads/{threadId}/comments endpoint', () => {
 
       const threadId = 'thread-123';
       const requestPayload = {
-        content: 'bla bla bla',
+        content: 'A comment',
       };
 
       await UsersTableTestHelper.addUser({
@@ -126,7 +125,7 @@ describe('/threads/{threadId}/comments endpoint', () => {
       const threadId = 'thread-123';
       const { accessToken } = await AuthenticationTestHelper.getAccessTokenHelper(server);
       const requestPayload = {
-        content: 'bla bla bla',
+        content: 'A comment',
       };
 
       await UsersTableTestHelper.addUser({
