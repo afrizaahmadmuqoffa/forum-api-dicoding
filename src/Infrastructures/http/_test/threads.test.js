@@ -157,12 +157,15 @@ describe('/threads endpoint', () => {
         url: `/threads/${threadId}`,
       });
 
+
       // Assert
       const responseJson = JSON.parse(response.payload);
+      console.log('responseJson', responseJson)
 
-      const {
-        data: { thread },
-      } = responseJson;
+
+      const {data: {thread}} = responseJson;
+
+      
       expect(response.statusCode).toEqual(200);
       expect(typeof responseJson.data).toEqual('object');
       expect(typeof thread).toEqual('object');

@@ -123,7 +123,7 @@ describe('RepliesRepositoryPostgres', () => {
             await repliesRepositoryPostgres.deleteReplyById('reply-123');
             // Assert
             const foundReply = await RepliesTableTestHelper.findReplyById('reply-123');
-            expect(foundReply.is_delete).toEqual(true);
+            expect(foundReply[0].is_delete).toEqual(true);
         });
       })
 
@@ -137,7 +137,7 @@ describe('RepliesRepositoryPostgres', () => {
     
             const repliesRepositoryPostgres = new RepliesRepositoryPostgres(pool, {});
             // Action
-            const replies = await repliesRepositoryPostgres.getReplyByCommentId('comment-123');
+            const replies = await repliesRepositoryPostgres.getReplyByCommentId(['comment-123']);
             // Assert
             expect(replies).toHaveLength(1);
         });

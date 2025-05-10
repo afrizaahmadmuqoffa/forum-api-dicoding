@@ -1,12 +1,13 @@
 const pool = require('../../database/postgres/pool');
 const container = require('../../container');
 const createServer = require('../createServer');
+const RepliesTableTestHelper = require('../../../../tests/RepliesTableTestHelper');
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const CommentTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
 const AuthenticationTestHelper = require('../../../../tests/AuthenticationsTestHelper');
 
-describe('/threads/{threadId}/comments endpoint', () => {
+describe('/threads/{threadId}/comments/{commentId}/replies endpoint', () => {
     
     afterAll(async () => {
         await pool.end();
@@ -17,14 +18,16 @@ describe('/threads/{threadId}/comments endpoint', () => {
       await UsersTableTestHelper.cleanTable();
     });
     
-  describe('when POST /threads/{threadId}/comments', () => {
+  describe('when POST /threads/{threadId}/comments/{commentId}/replies', () => {
     it('should response 401 when no access token provided', async () => {
       // Arrange
       const server = await createServer(container);
 
       const threadId = 'thread-123';
+      const commentId = 'comment-123';
+
       const requestPayload = {
-        content: 'bla bla bla',
+        content: 'reply content',
       };
 
       await UsersTableTestHelper.addUser({
@@ -36,10 +39,15 @@ describe('/threads/{threadId}/comments endpoint', () => {
         owner: 'user-123',
       });
 
+      await CommentTableTestHelper.addComment({
+        id: commentId,
+        owner: 'user-123',
+      })
+
       // Action
       const response = await server.inject({
         method: 'POST',
-        url: `/threads/${threadId}/comments`,
+        url: `/threads/${threadId}/comments/${commentId}/replies`,
         payload: requestPayload,
       });
 
@@ -54,6 +62,7 @@ describe('/threads/{threadId}/comments endpoint', () => {
       // Arrange
       const server = await createServer(container);
       const threadId = 'thread-123';
+      const commentId = 'comment-123';
       const { accessToken } = await AuthenticationTestHelper.getAccessTokenHelper(server);
       const requestPayload = {};
 
@@ -66,10 +75,15 @@ describe('/threads/{threadId}/comments endpoint', () => {
         owner: 'user-123',
       });
 
+      await CommentTableTestHelper.addComment({
+        id: commentId,
+        owner: 'user-123',
+      });
+
       // Action
       const response = await server.inject({
         method: 'POST',
-        url: `/threads/${threadId}/comments`,
+        url: `/threads/${threadId}/comments/${commentId}/replies`,
         payload: requestPayload,
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -81,7 +95,7 @@ describe('/threads/{threadId}/comments endpoint', () => {
       expect(response.statusCode).toEqual(400);
       expect(responseJson.status).toEqual('fail');
       expect(responseJson.message).toEqual(
-        'tidak dapat membuat comment baru karena tidak mengandung properti yang dibutuhkan',
+        'tidak dapat membuat balasan baru karena tidak mengandung properti yang dibutuhkan',
       );
     });
 
@@ -89,6 +103,7 @@ describe('/threads/{threadId}/comments endpoint', () => {
       // Arrange
       const server = await createServer(container);
       const threadId = 'thread-123';
+      const commentId = 'comment-123';
       const { accessToken } = await AuthenticationTestHelper.getAccessTokenHelper(server);
       const requestPayload = {
         content: 123,
@@ -103,10 +118,15 @@ describe('/threads/{threadId}/comments endpoint', () => {
         owner: 'user-123',
       });
 
+      await CommentTableTestHelper.addComment({
+        id: commentId,
+        owner: 'user-123',
+      });
+
       // Action
       const response = await server.inject({
         method: 'POST',
-        url: `/threads/${threadId}/comments`,
+        url: `/threads/${threadId}/comments/${commentId}/replies`,
         payload: requestPayload,
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -117,16 +137,17 @@ describe('/threads/{threadId}/comments endpoint', () => {
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(400);
       expect(responseJson.status).toEqual('fail');
-      expect(responseJson.message).toEqual('tidak dapat membuat comment baru karena spesifikasi tipe data tidak sesuai');
+      expect(responseJson.message).toEqual('tidak dapat membuat balasan baru karena spesifikasi tipe data tidak sesuai');
     });
 
-    it('should response 201 and added comment', async () => {
+    it('should response 201 and added reply', async () => {
       // Arrange
       const server = await createServer(container);
       const threadId = 'thread-123';
+      const commentId = 'comment-123';
       const { accessToken } = await AuthenticationTestHelper.getAccessTokenHelper(server);
       const requestPayload = {
-        content: 'bla bla bla',
+        content: 'reply content',
       };
 
       await UsersTableTestHelper.addUser({
@@ -138,10 +159,15 @@ describe('/threads/{threadId}/comments endpoint', () => {
         owner: 'user-123',
       });
 
+      await CommentTableTestHelper.addComment({
+        id: commentId,
+        owner: 'user-123',
+      });
+
       // Action
       const response = await server.inject({
         method: 'POST',
-        url: `/threads/${threadId}/comments`,
+        url: `/threads/${threadId}/comments/${commentId}/replies`,
         payload: requestPayload,
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -152,24 +178,25 @@ describe('/threads/{threadId}/comments endpoint', () => {
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(201);
       expect(responseJson.status).toEqual('success');
-      expect(responseJson.data.addedComment).toBeDefined();
-      expect(responseJson.data.addedComment.id).toBeDefined();
-      expect(responseJson.data.addedComment.content).toBeDefined();
-      expect(responseJson.data.addedComment.owner).toBeDefined();
+      expect(responseJson.data.addedReply).toBeDefined();
+      expect(responseJson.data.addedReply.id).toBeDefined();
+      expect(responseJson.data.addedReply.content).toBeDefined();
+      expect(responseJson.data.addedReply.owner).toBeDefined();
     });
   });
 
-  describe('when DELETE /threads/{threadId}/comments/{commentId}', () => {
+  describe('when DELETE /threads/{threadId}/comments/{commentId}/replies/{replyId}', () => {
     it('should response 401 when no access token provided', async () => {
       // Arrange
       const server = await createServer(container);
       const threadId = 'thread-123';
       const commentId = 'comment-123';
+      const replyId = 'reply-123';
 
       // Action
       const response = await server.inject({
         method: 'DELETE',
-        url: `/threads/${threadId}/comments/${commentId}`,
+        url: `/threads/${threadId}/comments/${commentId}/replies/${replyId}`,
       });
 
       // Assert
@@ -179,21 +206,32 @@ describe('/threads/{threadId}/comments endpoint', () => {
       expect(responseJson.message).toEqual('Missing authentication');
     });
 
-    it('should response 404 when comment or thread are not found', async () => {
+    it('should response 404 when reply or comment are not found', async () => {
       // Arrange
       const server = await createServer(container);
       const threadId = 'thread-123';
       const commentId = 'comment-123';
+      const replyId = 'reply-123';
       const { accessToken } = await AuthenticationTestHelper.getAccessTokenHelper(server);
 
       await UsersTableTestHelper.addUser({
         id: 'user-123',
       });
 
+      await ThreadsTableTestHelper.addThread({
+        id: threadId,
+        owner: 'user-123',
+      });
+
+      await CommentTableTestHelper.addComment({
+        id: commentId,
+        owner: 'user-123',
+      });
+
       // Action
       const response = await server.inject({
         method: 'DELETE',
-        url: `/threads/${threadId}/comments/${commentId}`,
+        url: `/threads/${threadId}/comments/${commentId}/replies/${replyId}`,
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -206,15 +244,21 @@ describe('/threads/{threadId}/comments endpoint', () => {
       expect(responseJson.message).toBeDefined();
     });
 
-    it('should response 403 when no access to delete the comment', async () => {
+    it('should response 403 when no access to delete the reply', async () => {
       // Arrange
       const server = await createServer(container);
       const threadId = 'thread-123';
       const commentId = 'comment-123';
+      const replyId = 'reply-123';
       const { accessToken } = await AuthenticationTestHelper.getAccessTokenHelper(server);
 
       await UsersTableTestHelper.addUser({
         id: 'user-123',
+      });
+      await UsersTableTestHelper.addUser({
+        id: 'user-456',
+        username: 'johndoe',
+        fullname: 'John Doe',
       });
 
       await ThreadsTableTestHelper.addThread({
@@ -227,10 +271,15 @@ describe('/threads/{threadId}/comments endpoint', () => {
         owner: 'user-123',
       });
 
+      await RepliesTableTestHelper.addReply({
+        id: replyId,
+        owner: 'user-456',
+      });
+
       // Action
       const response = await server.inject({
         method: 'DELETE',
-        url: `/threads/${threadId}/comments/${commentId}`,
+        url: `/threads/${threadId}/comments/${commentId}/replies/${replyId}`,
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -243,11 +292,12 @@ describe('/threads/{threadId}/comments endpoint', () => {
       expect(responseJson.message).toEqual('Anda tidak berhak mengakses resource ini');
     });
 
-    it('should response 200 when delete comment correctly', async () => {
+    it('should response 200 when delete reply correctly', async () => {
       // Arrange
       const server = await createServer(container);
       const threadId = 'thread-123';
       const commentId = 'comment-123';
+      const replyId = 'reply-123';
       const { accessToken, userId } = await AuthenticationTestHelper.getAccessTokenHelper(server);
 
       await ThreadsTableTestHelper.addThread({
@@ -260,10 +310,15 @@ describe('/threads/{threadId}/comments endpoint', () => {
         owner: userId,
       });
 
+      await RepliesTableTestHelper.addReply({
+        id: replyId,
+        owner: userId,
+      });
+
       // Action
       const response = await server.inject({
         method: 'DELETE',
-        url: `/threads/${threadId}/comments/${commentId}`,
+        url: `/threads/${threadId}/comments/${commentId}/replies/${replyId}`,
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },

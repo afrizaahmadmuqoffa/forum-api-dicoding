@@ -10,7 +10,6 @@ class AddComment {
     }
   
     _validatePayload({ content, threadId, owner }) {
-      console.log(content, threadId, owner);
       if (!content || !owner || !threadId) {
         throw new Error('ADD_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
       }

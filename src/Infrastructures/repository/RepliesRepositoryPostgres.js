@@ -65,17 +65,14 @@ class RepliesRepositoryPostgres extends RepliesRepository {
     
     }
 
-    async getReplyByCommentId(commentId) {
+    async getReplyByCommentId(commentIds) {
         const query = {
-        text: 'SELECT replies.id, replies.content, replies.date, replies.owner, replies.is_delete FROM replies JOIN users ON replies.owner = users.id WHERE replies.comment_id = $1',
-        values: [commentId],
+        text: 'SELECT replies.id, replies.comment_id, replies.content, replies.date, users.username, replies.is_delete FROM replies LEFT JOIN users ON users.id = replies.owner WHERE replies.comment_id = ANY($1::text[]) ORDER BY replies.date ASC',
+        values: [commentIds],
         };
+
     
         const result = await this._pool.query(query);
-
-        if (!result.rows.length) {
-        throw new NotFoundError('Reply tidak ditemukan');
-        }
     
         return result.rows;
     }

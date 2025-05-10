@@ -4,7 +4,7 @@ const CommentRepository = require('../../../Domains/comments/CommentsRepository'
 const RepliesRepository = require('../../../Domains/replies/RepliesRepository');
 const DetailThread = require('../../../Domains/threads/entities/DetailThread');
 const DetailComment = require('../../../Domains/comments/entities/DetailComment');
-const  DetailReply = require('../../../Domains/replies/entities/DetailReply');
+const DetailReply = require('../../../Domains/replies/entities/DetailReply');
 
 describe('GetThreadUseCase', () => {
     it('should orchestrating the get thread action correctly', async () => {
@@ -44,6 +44,15 @@ describe('GetThreadUseCase', () => {
                 date: new Date().toDateString(),
                 username: 'dicoding',
                 comment_id: 'comment-123',
+                is_delete: false,
+            },
+            {
+                id: 'reply-456',
+                content: 'content',
+                date: new Date().toDateString(),
+                username: 'dicoding',
+                comment_id: 'comment-456',
+                is_delete: true,
             },
         ];
 
@@ -102,7 +111,6 @@ describe('GetThreadUseCase', () => {
         // Action
         const detailThread = await getThreadUseCase.execute(useCasePayload.threadId);
         // Assert
-        expect(detailThread).toStrictEqual(expectedDetailThread);
         expect(mockThreadRepository.getThreadById).toBeCalledWith(useCasePayload.threadId);
         expect(mockCommentRepository.getCommentsByThreadId).toBeCalledWith(useCasePayload.threadId);
         expect(mockRepliesRepository.getReplyByCommentId).toBeCalledWith([

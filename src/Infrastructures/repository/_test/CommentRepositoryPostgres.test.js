@@ -131,5 +131,16 @@ describe('getCommentsByThreadId function', () => {
     // Assert
     expect(comments).toHaveLength(1);
   });
+  
+  it('should return notfound error when comments by thread id not found', async () => {
+    // Arrange
+    await UsersTableTestHelper.addUser({ id: 'user-123' });
+    await ThreadsTableTestHelper.addThread({ id: 'thread-123' });
+    const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+    // Action & Assert
+    const comments = await commentRepositoryPostgres.getCommentsByThreadId('thread-123');
+    expect(comments).toHaveLength(0);
+  })
+
 })
 })
