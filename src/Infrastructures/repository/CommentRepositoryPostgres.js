@@ -2,6 +2,7 @@ const CommentRepository = require('../../Domains/comments/CommentsRepository');
 const InvariantError = require('../../Commons/exceptions/InvariantError');
 const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
+const AddedComment = require('../../Domains/comments/entities/AddedComment');
 
 class CommentRepositoryPostgres extends CommentRepository {
   constructor(pool, idGenerator) {
@@ -20,13 +21,13 @@ class CommentRepositoryPostgres extends CommentRepository {
       values: [id, content, threadId, owner, date],
     };
 
-    const result = await this._pool.query(query);
+    try {
+      const result = await this._pool.query(query);
 
-    if (!result.rows[0].id) {
+      return new AddedComment(result.rows[0]);
+    } catch (error) {
       throw new InvariantError('Comment gagal ditambahkan');
     }
-
-    return result.rows[0];
   }
 
   async verifyCommentIsExistById(commentId, threadId) {

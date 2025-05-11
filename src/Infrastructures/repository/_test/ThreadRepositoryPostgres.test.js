@@ -1,7 +1,6 @@
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
-const AddThread = require('../../../Domains/threads/entities/AddThread');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const InvariantError = require('../../../Commons/exceptions/InvariantError');
 const pool = require('../../database/postgres/pool');
@@ -19,18 +18,15 @@ describe('ThreadRepositoryPostgres', () => {
   describe('addThread function', () => {
     it('should throw InvariantError when add thread failed', async () => {
       // Arrange
-      const thread = new AddThread({
-        title: 'A Thread',
+      const thread = {
+        title: null,
         body: 'A body',
         owner: 'user-123',
-      });
-      const fakeIdGenerator = () => '123';
-      const fakePool = {
-        query: jest.fn().mockResolvedValue({
-          rows: [{}],
-        }),
       };
-      const threadRepositoryPostgres = new ThreadRepositoryPostgres(fakePool, fakeIdGenerator);
+      await UsersTableTestHelper.addUser({ id: 'user-123' });
+      const fakeIdGenerator = () => '123';
+
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
 
       // Action & Assert
       await expect(threadRepositoryPostgres.addThread(thread))
@@ -40,11 +36,11 @@ describe('ThreadRepositoryPostgres', () => {
     it('should persist add thread and return added thread correctly', async () => {
       // Arrange
       await UsersTableTestHelper.addUser({ id: 'user-123' });
-      const thread = new AddThread({
+      const thread = {
         title: 'A Thread',
         body: 'A body',
         owner: 'user-123',
-      });
+      };
 
       const fakeIdGenerator = () => '123';
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);

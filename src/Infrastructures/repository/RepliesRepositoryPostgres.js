@@ -2,6 +2,7 @@ const RepliesRepository = require('../../Domains/replies/RepliesRepository');
 const InvariantError = require('../../Commons/exceptions/InvariantError');
 const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
+const AddedReply = require('../../Domains/replies/entities/AddedReply');
 
 class RepliesRepositoryPostgres extends RepliesRepository {
   constructor(pool, idGenerator) {
@@ -14,19 +15,17 @@ class RepliesRepositoryPostgres extends RepliesRepository {
     const { commentId, content, owner } = addReply;
     const id = `reply-${this._idGenerator()}`;
     const date = new Date().toISOString();
-
     const query = {
       text: 'INSERT INTO replies VALUES($1, $2, $3, $4, $5) RETURNING id, owner, content',
       values: [id, content, commentId, owner, date],
     };
 
-    const result = await this._pool.query(query);
-
-    if (!result.rows[0].id) {
+    try {
+      const result = await this._pool.query(query);
+      return new AddedReply(result.rows[0]);
+    } catch (error) {
       throw new InvariantError('Reply gagal ditambahkan');
     }
-
-    return result.rows[0];
   }
 
   async verifyReplyIsExistById(replyId) {

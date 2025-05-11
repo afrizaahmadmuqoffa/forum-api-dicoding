@@ -14,7 +14,8 @@ class AddCommentUseCase {
       owner,
     });
 
-    return this._commentRepository.addComment(comment);
+    const addedComment = await this._commentRepository.addComment(comment);
+    return addedComment;
   }
 }
 

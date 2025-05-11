@@ -40,17 +40,14 @@ describe('CommentRepositoryPostgres', () => {
     it('should throw invariant error when add comment failed', async () => {
       // Arrange
       const comment = {
-        content: 'A Comment',
+        content: null,
         owner: 'user-123',
       };
+      await UsersTableTestHelper.addUser({ id: 'user-123' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123' });
       const fakeIdGenerator = () => '123';
-      const fakePool = {
-        query: jest.fn().mockResolvedValue({
-          rows: [{}],
-        }),
-      };
 
-      const commentRepositoryPostgres = new CommentRepositoryPostgres(fakePool, fakeIdGenerator);
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
       // Action & Assert
       await expect(
         commentRepositoryPostgres.addComment(comment),

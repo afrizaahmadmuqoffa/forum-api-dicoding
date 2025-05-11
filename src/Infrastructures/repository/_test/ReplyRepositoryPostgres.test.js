@@ -43,18 +43,17 @@ describe('RepliesRepositoryPostgres', () => {
     it('should throw invariant error when add reply failed', async () => {
       // Arrange
       const reply = {
-        content: 'A Reply',
+        content: null,
         owner: 'user-123',
         commentId: 'comment-123',
       };
-      const fakeIdGenerator = () => '123';
-      const fakePool = {
-        query: jest.fn().mockResolvedValue({
-          rows: [{}],
-        }),
-      };
 
-      const repliesRepositoryPostgres = new RepliesRepositoryPostgres(fakePool, fakeIdGenerator);
+      await UsersTableTestHelper.addUser({ id: 'user-123' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123' });
+      await CommentsTableTestHelper.addComment({ id: 'comment-123' });
+      const fakeIdGenerator = () => '123';
+
+      const repliesRepositoryPostgres = new RepliesRepositoryPostgres(pool, fakeIdGenerator);
       // Action & Assert
       await expect(repliesRepositoryPostgres.addReply(reply)).rejects.toThrowError(InvariantError);
     });

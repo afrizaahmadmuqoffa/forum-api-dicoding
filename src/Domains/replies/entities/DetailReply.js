@@ -6,7 +6,7 @@ class DetailReply {
       id, content, date, username, isDelete,
     } = payload;
     this.id = id;
-    this.content = content;
+    this.content = isDelete ? '**balasan telah dihapus**' : content;
     this.username = username;
     this.date = date;
     this.isDelete = isDelete;

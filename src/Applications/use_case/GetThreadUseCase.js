@@ -17,28 +17,25 @@ class GetThreadUseCase {
     const replies = await this._repliesRepository.getReplyByCommentId(commentIds);
 
     const processedComments = comments.map((comment) => {
-      const filteredReplies = replies.filter((reply) => reply.comment_id === comment.id);
-
-      const relatedReplies = filteredReplies.map((reply) => {
-        const content = reply.is_delete ? '**balasan telah dihapus**' : reply.content;
-        return new DetailReply({
-          id: reply.id,
+      const filteredReplies = replies
+        .filter((reply) => reply.comment_id === comment.id)
+        .map(({
+          id, content, date, username, is_delete,
+        }) => new DetailReply({
+          id,
           content,
-          date: reply.date,
-          username: reply.username,
-          isDelete: reply.is_delete,
-        });
-      });
+          date,
+          username,
+          isDelete: is_delete,
+        }));
 
-      // Jika komentar dihapus
-      const content = comment.is_delete ? '**komentar telah dihapus**' : comment.content;
       return new DetailComment({
         id: comment.id,
-        content,
+        content: comment.content,
         date: comment.date,
         username: comment.username,
         isDelete: comment.is_delete,
-        replies: comment.is_delete ? [] : relatedReplies,
+        replies: filteredReplies,
       });
     });
 
