@@ -39,6 +39,7 @@ jobs:
     - name: npm install migrate and test
       run: |
         npm install
+        npm install node-pg-migrate@latest
         npm run migrate up
         npm run test
       env:
