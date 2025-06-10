@@ -6,6 +6,7 @@ const pool = require('../../database/postgres/pool');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
 const InvariantError = require('../../../Commons/exceptions/InvariantError');
+const AddedComment = require('../../../Domains/comments/entities/AddedComment');
 
 describe('CommentRepositoryPostgres', () => {
   afterEach(async () => {
@@ -31,9 +32,14 @@ describe('CommentRepositoryPostgres', () => {
       const fakeIdGenerator = () => '123';
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
       // Action
-      await commentRepositoryPostgres.addComment(comment);
-      // Assert
+      const addedComment = await commentRepositoryPostgres.addComment(comment);
       const foundComment = await CommentsTestTableTestHelper.findCommentById('comment-123');
+      // Assert
+      expect(addedComment).toStrictEqual(new AddedComment({
+        content: 'A Comment',
+        owner: 'user-123',
+        id: 'comment-123',
+      }));
       expect(foundComment).toHaveLength(1);
     });
 
@@ -125,6 +131,13 @@ describe('CommentRepositoryPostgres', () => {
       // Action
       const comments = await commentRepositoryPostgres.getCommentsByThreadId('thread-123');
       // Assert
+      expect(comments).toStrictEqual([{
+        id: 'comment-123',
+        content: 'A Comment',
+        date: '2025-05-11T08:23:45.678Z',
+        username: 'dicoding',
+        is_delete: false,
+      }]);
       expect(comments).toHaveLength(1);
     });
 

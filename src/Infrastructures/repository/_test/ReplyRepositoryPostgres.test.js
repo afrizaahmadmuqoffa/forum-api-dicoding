@@ -7,6 +7,7 @@ const RepliesRepositoryPostgres = require('../RepliesRepositoryPostgres');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
 const InvariantError = require('../../../Commons/exceptions/InvariantError');
+const AddedReply = require('../../../Domains/replies/entities/AddedReply');
 
 describe('RepliesRepositoryPostgres', () => {
   afterEach(async () => {
@@ -34,9 +35,15 @@ describe('RepliesRepositoryPostgres', () => {
       const fakeIdGenerator = () => '123';
       const repliesRepositoryPostgres = new RepliesRepositoryPostgres(pool, fakeIdGenerator);
       // Action
-      await repliesRepositoryPostgres.addReply(reply);
-      // Assert
+      const addedReply = await repliesRepositoryPostgres.addReply(reply);
       const foundReply = await RepliesTableTestHelper.findReplyById('reply-123');
+      // Assert
+      expect(addedReply).toStrictEqual(new AddedReply({
+        content: 'A Reply',
+        owner: 'user-123',
+        id: 'reply-123',
+      }));
+
       expect(foundReply).toHaveLength(1);
     });
 
@@ -136,6 +143,14 @@ describe('RepliesRepositoryPostgres', () => {
       // Action
       const replies = await repliesRepositoryPostgres.getReplyByCommentId(['comment-123']);
       // Assert
+      expect(replies).toStrictEqual([{
+        id: 'reply-123',
+        comment_id: 'comment-123',
+        content: 'A reply',
+        date: '2025-05-11T08:23:45.678Z',
+        username: 'dicoding',
+        is_delete: false,
+      }]);
       expect(replies).toHaveLength(1);
     });
   });

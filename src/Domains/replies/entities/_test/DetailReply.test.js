@@ -49,4 +49,21 @@ describe('DetailReply entities', () => {
     expect(username).toEqual(payload.username);
     expect(isDelete).toEqual(payload.isDelete);
   });
+
+  it('should show deleted message when isDelete is true', () => {
+  // Arrange
+    const payload = {
+      id: 'reply-123',
+      content: 'A Reply',
+      date: new Date().toISOString(),
+      username: 'user-123',
+      isDelete: true,
+    };
+
+    // Action
+    const detailReply = new DetailReply(payload);
+
+    // Assert
+    expect(detailReply.content).toBe('**balasan telah dihapus**');
+  });
 });

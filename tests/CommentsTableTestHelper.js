@@ -7,7 +7,7 @@ const CommentsTableTestHelper = {
     content = 'A Comment',
     owner = 'user-123',
     threadId = 'thread-123',
-    date = new Date().toISOString(),
+    date = '2025-05-11T08:23:45.678Z',
   }) {
     const query = {
       text: 'INSERT INTO comments VALUES($1, $2, $3, $4, $5)',

@@ -3,10 +3,13 @@ const DetailComment = require('../../Domains/comments/entities/DetailComment');
 const DetailReply = require('../../Domains/replies/entities/DetailReply');
 
 class GetThreadUseCase {
-  constructor({ threadRepository, commentRepository, repliesRepository }) {
+  constructor({
+    threadRepository, commentRepository, repliesRepository, likeRepository,
+  }) {
     this._threadRepository = threadRepository;
     this._commentRepository = commentRepository;
     this._repliesRepository = repliesRepository;
+    this._likeRepository = likeRepository;
   }
 
   async execute(threadId) {
@@ -16,7 +19,7 @@ class GetThreadUseCase {
     const commentIds = comments.map((comment) => comment.id);
     const replies = await this._repliesRepository.getReplyByCommentId(commentIds);
 
-    const processedComments = comments.map((comment) => {
+    const processedComments = await Promise.all(comments.map(async (comment) => {
       const filteredReplies = replies
         .filter((reply) => reply.comment_id === comment.id)
         .map(({
@@ -29,15 +32,18 @@ class GetThreadUseCase {
           isDelete: is_delete,
         }));
 
+      const likeCount = await this._likeRepository.countLikesByCommentId(comment.id);
+
       return new DetailComment({
         id: comment.id,
         content: comment.content,
         date: comment.date,
         username: comment.username,
+        likeCount,
         isDelete: comment.is_delete,
         replies: filteredReplies,
       });
-    });
+    }));
 
     // 5. Kembalikan DetailThread
     const detailThread = new DetailThread({

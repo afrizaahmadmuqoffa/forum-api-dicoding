@@ -80,7 +80,7 @@ describe('/threads/{threadId}/comments endpoint', () => {
       expect(response.statusCode).toEqual(400);
       expect(responseJson.status).toEqual('fail');
       expect(responseJson.message).toEqual(
-        'tidak dapat membuat comment baru karena tidak mengandung properti yang dibutuhkan',
+        'tidak dapat membuat comment baru karena properti yang dibutuhkan tidak ada',
       );
     });
 
@@ -116,7 +116,7 @@ describe('/threads/{threadId}/comments endpoint', () => {
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(400);
       expect(responseJson.status).toEqual('fail');
-      expect(responseJson.message).toEqual('tidak dapat membuat comment baru karena spesifikasi tipe data tidak sesuai');
+      expect(responseJson.message).toEqual('tidak dapat membuat comment baru karena tipe data tidak sesuai');
     });
 
     it('should response 201 and added comment', async () => {
